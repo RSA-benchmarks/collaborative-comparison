@@ -63,7 +63,7 @@ def plot_rsml(polylines :list):
 
 
 if __name__ == '__main__':
-        polylines, properties, functions = read_rsml("root_grid/RootSystem.rmsl")
+        polylines, properties, functions = read_rsml("root_grid/RootSystem.rsml")
         print("Properties:")
         for key, v in properties.items() :
             print("\t", key)
