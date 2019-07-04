@@ -72,17 +72,19 @@ def get_segments(polylines :list, props :dict) -> (list, list):
     return nodes, segs
 
 
-def get_parameter(polylines :list, funcs :dict) -> (list, list):
+def get_parameter(polylines :list, funcs :dict, props :dict) -> (list, list, list):
     """ Copies radii and creation times, one value per segment 
     """
     fdiam = funcs["diameter"]
     fet = funcs["emergence_time"]
-    radii, cts = [], []
+    ptype = props["type"]
+    radii, cts, types = [], [], []
     for i, p in enumerate(polylines):
         for j in range(0, len(p)):
             radii.append(fdiam[i][j] / 2)
             cts.append(fet[i][j])
-    return radii, cts
+            types.append(ptype[i])
+    return radii, cts, types
 
 
 def plot_rsml(polylines :list, prop : list):
@@ -93,6 +95,7 @@ def plot_rsml(polylines :list, prop : list):
     for i, pl in enumerate(polylines):
         nodes = np.array(pl)
         plt.plot(nodes[:, 1], nodes[:, 2], color = newcolors[int(prop[i]), :])  # y,z plot / (len(polylines) - 1)
+    plt.axis('equal')
     plt.show()
 
 
@@ -101,6 +104,7 @@ def plot_segs(nodes, segs):
     """
     for s in segs:
         plt.plot([nodes[s[0], 1], nodes[s[1], 1]], [nodes[s[0], 2], nodes[s[1], 2]], "r")
+    plt.axis('equal')
     plt.show()
 
 
@@ -113,6 +117,8 @@ if __name__ == '__main__':
     for key, v in functions.items() :
         print("\t", key, len(functions[key]))
     nodes, segs = get_segments(polylines, properties)
+    radii, cts, types = get_parameter(polylines, functions, properties)
+
     # plot_rsml(polylines, properties["parent-node"])  # properties["parent-node"]
     nodes = np.array(nodes)
     segs = np.array(segs, dtype = np.int64)
