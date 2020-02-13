@@ -88,6 +88,21 @@ def get_segments(polylines :list, props :dict) -> (list, list):
     return nodes, segs
 
 
+def get_parameter(polylines :list, funcs :dict, props :dict) -> (list, list, list):
+    """ Copies radii and creation times, one value per segment 
+    """
+    fdiam = funcs["diameter"]
+    fet = funcs["emergence_time"]
+    ptype = props["type"]
+    radii, cts, types = [], [], []
+    for i, p in enumerate(polylines):
+        for j in range(0, len(p)):
+            radii.append(fdiam[i][j] / 2)
+            cts.append(fet[i][j])
+            types.append(ptype[i])
+    return radii, cts, types
+
+
 def plot_rsml(polylines :list, prop :list):
     """Plots the polylines in y-z axis with colors given by a root property
 
