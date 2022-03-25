@@ -1,16 +1,19 @@
 """ Mualem - van Genuchten model, equations from van Genuchten, MT (1980) """
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy import integrate
+from scipy import optimize
 
 # class containing the van Genuchten parameters
 class Parameters:
-    def __init__(self, R, S, alpha, n, Ksat):
+    def __init__(self, R, S, alpha, n, Ksat, l = 0.5):
         self.theta_R = R
         self.theta_S = S        
         self.alpha = alpha # [1/cm]         
         self.n = n
         self.m = 1.-1./n
-        self.Ksat = Ksat       
+        self.Ksat = Ksat   
+        self.l = l     
 
 # returns the volumetric water content at a given pressure head  according to the van genuchten model (Eqn 21)
 def water_content(h, sp):
@@ -46,7 +49,20 @@ def water_diffusivity(TH, theta_i, theta_sur, sp):
     m = sp.m
     D = (1 - m) * sp.Ksat / (sp.alpha * m * (sp.theta_S - sp.theta_R)) * pow(Se, 0.5 - 1. / m) * (pow(1 - pow(Se, 1. / m), -m) + pow(1 - pow(Se, 1 / m), m) - 2)
     return D
-    
+
+# returns the matric flux potential
+def MFP(h,sp):
+    K = lambda h: hydraulic_conductivity(h,sp) # integrand 
+    MFP, err = integrate.quad(K,-15000, h)
+    return MFP
+
+# returns the matric potential from matric flux potential
+def h(MFP_given,sp):
+    MFP_root = lambda psi: MFP(psi,sp)-MFP_given
+    h = optimize.brentq(MFP_root, -15000, 0)
+    return h
+
+
 # normalized root mean squared error
 def nRMSE(y_i, y_hat):
     assert len(y_i)==len(y_hat), "number of observations y_i must equalt number of predictions y_hat"
@@ -80,7 +96,8 @@ plt.rc('figure', titlesize=18)  # fontsize of the figure title
 # col = 0.75*cmap(range(0,100))
 
 cc_inc = 1 # increment
-col=np.array([(1,0.0,0.0),(0.0,0.0,1),(0.0,1,0.0),(1,0.0,1),(0.5,1,1)])
+col=np.array([(1,0.,0.),(0.,0.,1),(0.,1,0.),(1,0.,1),(0.5,1,1)])
+col = np.vstack((col, 0.5*col))
 
 
 
