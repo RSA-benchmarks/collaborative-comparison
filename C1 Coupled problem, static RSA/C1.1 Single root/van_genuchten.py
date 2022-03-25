@@ -95,10 +95,14 @@ plt.rc('figure', titlesize=18)  # fontsize of the figure title
 # cmap = plt.get_cmap('tab20c')
 # col = 0.75*cmap(range(0,100))
 
-cc_inc = 1 # increment
-col=np.array([(1,0.,0.),(0.,0.,1),(0.,1,0.),(1,0.,1),(0.5,1,1)])
-col = np.vstack((col, 0.5*col))
+#cc_inc = 1 # increment
+#col=np.array([(1,0.,0.),(0.,0.,1),(0.,1,0.),(1,0.,1),(0.5,1,1)])
+#col = np.vstack((col, 0.5*col))
 
+# cmap = plt.get_cmap('Dark2')
+# cmap = plt.get_cmap('Accent') # ganz schlecht
+cmap = plt.get_cmap('tab10')
+col = cmap([0,1,2,4,5,6,7,8,9,10,11,12,13,14,15]) # avoid 'red'
 
 
 
